@@ -1,25 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+import './App.css';
+import { useState, useEffect} from "react";
+
+
+function GithubUser({name, location, avatar}) {
+  return(
+    <div>
+      <h1>{name}</h1>
+      <p>{location}</p>
+      <img src={avatar}  alt={name} />
     </div>
   );
+}
+
+
+function App() {
+const [data, setData] = useState(null);
+const [error, setError] = useState(null);
+const [loading, setLoading] = useState(false);
+
+
+useEffect(() => {
+  setLoading(true);
+  fetch('https://api.github.com/users/t-vanderwolk')
+  .then((response) => response.json())
+  .then(setData)
+  .then(() => setLoading(false))
+  .catch(setError);
+},[]);
+
+if (loading) return <h1>Loading...</h1>;
+if (error) return <pre>{JSON.stringify(error)}</pre>;
+if(!data) return null;
+return(
+    <GithubUser 
+    name={data.login} 
+    location={data.location}
+    avatar={data.avatar_url}
+    />
+ 
+);
+
 }
 
 export default App;
